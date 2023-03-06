@@ -6,21 +6,21 @@ import picolib.semantics._
 import java.io.File
 
 object ChaDSL {
-  sealed trait Direction
-  case object North extends Direction
-  case object East extends Direction
-  case object West extends Direction
-  case object South extends Direction
-  case object StayHere extends Direction
+  sealed trait PicobotDirection
+  case object North extends PicobotDirection
+  case object East extends PicobotDirection
+  case object West extends PicobotDirection
+  case object South extends PicobotDirection
+  case object StayHere extends PicobotDirection
 
-  def parseDirection(input: String): MoveDirection = input match {
-    case "One hop this time" => North
-    case "Slide to the right" => East
-    case "Slide to the left" => West
-    case "Reverse" => South
-    case "Freeze" => StayHere
-    case _ => throw new IllegalArgumentException(s"Invalid input: $input")
-  }
+  val directionMap = Map(
+    "One hop this time" -> North,
+    "Slide to the right" -> East,
+    "Slide to the left" -> West,
+    "Reverse" -> South,
+    "Freeze" -> StayHere
+  )
+
 
   val rules = List(
     /////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ object ChaDSL {
     Rule(
       State("0"),
       Surroundings(Anything, Anything, Open, Anything),
-      parseDirection("Slide to the left"),
+      ("Slide to the left").asInstanceOf[picolib.semantics.MoveDirection],
       State("0")
     ),
 
@@ -39,7 +39,7 @@ object ChaDSL {
     Rule(
       State("0"),
       Surroundings(Anything, Anything, Blocked, Anything),
-      parseDirection("Freeze"),
+      ("Freeze").asInstanceOf[picolib.semantics.MoveDirection],
       State("1")
     ),
 
@@ -51,7 +51,7 @@ object ChaDSL {
     Rule(
       State("1"),
       Surroundings(Open, Anything, Anything, Anything),
-      parseDirection("One hop this time"),
+      ("One hop this time").asInstanceOf[picolib.semantics.MoveDirection],
       State("1")
     ),
 
@@ -59,7 +59,7 @@ object ChaDSL {
     Rule(
       State("1"),
       Surroundings(Blocked, Anything, Anything, Open),
-      parseDirection("Reverse"),
+      ("Reverse").asInstanceOf[picolib.semantics.MoveDirection],
       State("2")
     ),
 
@@ -71,7 +71,7 @@ object ChaDSL {
     Rule(
       State("2"),
       Surroundings(Anything, Anything, Anything, Open),
-      parseDirection("Reverse"),
+      ("Reverse").asInstanceOf[picolib.semantics.MoveDirection],
       State("2")
     ),
 
@@ -80,7 +80,7 @@ object ChaDSL {
     Rule(
       State("2"),
       Surroundings(Anything, Open, Anything, Blocked),
-      parseDirection("Slide to the right"),
+      ("Slide to the right").asInstanceOf[picolib.semantics.MoveDirection],
       State("3")
     ),
 
@@ -88,7 +88,7 @@ object ChaDSL {
     Rule(
       State("3"),
       Surroundings(Open, Anything, Anything, Anything),
-      parseDirection("One hop this time"),
+      ("One hop this time").asInstanceOf[picolib.semantics.MoveDirection],
       State("3")
     ),
 
@@ -97,7 +97,7 @@ object ChaDSL {
     Rule(
       State("3"),
       Surroundings(Blocked, Open, Anything, Anything),
-      parseDirection("Slide to the right"),
+      ("Slide to the right").asInstanceOf[picolib.semantics.MoveDirection],
       State("2")
     )
   )
