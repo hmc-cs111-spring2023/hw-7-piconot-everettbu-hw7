@@ -8,367 +8,72 @@ import picolib.maze.Maze
 import picolib.display.TextDisplay
 import scala.collection.mutable.ListBuffer
 
-class ChaDSL(val mazeFilename: String) extends App {
-
-  private val rules = ListBuffer.empty[Rule]
-
-  def addRule(rule: Rule) = rules += rule
-
-  def run = {
-    val maze = Maze(mazeFilename)
-    object bot extends Picobot(maze, rules.toList) with TextDisplay
-    bot.run()
-    }
-
-// a class to build a rule from its parts and add the rule to the running
-  // list of rules in this picobor program
-  class RuleBuilder(val startState: State, val surroundings: Surroundings) {
-    val program = ChaDSL.this
-    def →(rhs: (MoveDirection, State)) = {
-      val (moveDirection, nextState) = rhs
-      val rule = new Rule(startState, surroundings, moveDirection, nextState)
-      program.addRule(rule)
-    }
+given Conversion[String, RelativeDescription] = (name: String) =>
+  name match {
+    case "Freeze" => Blocked
+    case "Funky" => Open
+    case "Cha" => Anything
   }
 
-  extension (n: Int) {
-    def `xxxx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Open, Open)
-    )
-    def `xxx*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Open, Anything)
-    )
-    def `xxxS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Open, Blocked)
-    )
-    def `xx*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Anything, Open)
-    )
-    def `xx**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Anything, Anything)
-    )
-    def `xx*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Anything, Blocked)
-    )
-    def `xxWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Blocked, Open)
-    )
-    def `xxW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Blocked, Anything)
-    )
-    def `xxWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Open, Blocked, Blocked)
-    )
-    def `x*xx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Open, Open)
-    )
-    def `x*x*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Open, Anything)
-    )
-    def `x*xS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Open, Blocked)
-    )
-    def `x**x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Anything, Open)
-    )
-    def `x***` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Anything, Anything)
-    )
-    def `x**S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Anything, Blocked)
-    )
-    def `x*Wx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Blocked, Open)
-    )
-    def `x*W*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Blocked, Anything)
-    )
-    def `x*WS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Anything, Blocked, Blocked)
-    )
-    def `xExx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Open, Open)
-    )
-    def `xEx*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Open, Anything)
-    )
-    def `xExS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Open, Blocked)
-    )
-    def `xE*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Anything, Open)
-    )
-    def `xE**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Anything, Anything)
-    )
-    def `xE*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Anything, Blocked)
-    )
-    def `xEWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Blocked, Open)
-    )
-    def `xEW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Blocked, Anything)
-    )
-    def `xEWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Open, Blocked, Blocked, Blocked)
-    )
-    def `*xxx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Open, Open)
-    )
-    def `*xx*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Open, Anything)
-    )
-    def `*xxS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Open, Blocked)
-    )
-    def `*x*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Anything, Open)
-    )
-    def `*x**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Anything, Anything)
-    )
-    def `*x*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Anything, Blocked)
-    )
-    def `*xWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Blocked, Open)
-    )
-    def `*xW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Blocked, Anything)
-    )
-    def `*xWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Open, Blocked, Blocked)
-    )
-    def `**xx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Open, Open)
-    )
-    def `**x*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Open, Anything)
-    )
-    def `**xS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Open, Blocked)
-    )
-    def `***x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Anything, Open)
-    )
-    def `****` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Anything, Anything)
-    )
-    def `***S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Anything, Blocked)
-    )
-    def `**Wx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Blocked, Open)
-    )
-    def `**W*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Blocked, Anything)
-    )
-    def `**WS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Anything, Blocked, Blocked)
-    )
-    def `*Exx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Open, Open)
-    )
-    def `*Ex*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Open, Anything)
-    )
-    def `*ExS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Open, Blocked)
-    )
-    def `*E*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Anything, Open)
-    )
-    def `*E**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Anything, Anything)
-    )
-    def `*E*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Anything, Blocked)
-    )
-    def `*EWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Blocked, Open)
-    )
-    def `*EW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Blocked, Anything)
-    )
-    def `*EWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Anything, Blocked, Blocked, Blocked)
-    )
-    def `Nxxx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Open, Open)
-    )
-    def `Nxx*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Open, Anything)
-    )
-    def `NxxS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Open, Blocked)
-    )
-    def `Nx*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Anything, Open)
-    )
-    def `Nx**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Anything, Anything)
-    )
-    def `Nx*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Anything, Blocked)
-    )
-    def `NxWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Blocked, Open)
-    )
-    def `NxW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Blocked, Anything)
-    )
-    def `NxWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Open, Blocked, Blocked)
-    )
-    def `N*xx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Open, Open)
-    )
-    def `N*x*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Open, Anything)
-    )
-    def `N*xS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Open, Blocked)
-    )
-    def `N**x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Anything, Open)
-    )
-    def `N***` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Anything, Anything)
-    )
-    def `N**S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Anything, Blocked)
-    )
-    def `N*Wx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Blocked, Open)
-    )
-    def `N*W*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Blocked, Anything)
-    )
-    def `N*WS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Anything, Blocked, Blocked)
-    )
-    def `NExx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Open, Open)
-    )
-    def `NEx*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Open, Anything)
-    )
-    def `NExS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Open, Blocked)
-    )
-    def `NE*x` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Anything, Open)
-    )
-    def `NE**` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Anything, Anything)
-    )
-    def `NE*S` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Anything, Blocked)
-    )
-    def `NEWx` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Blocked, Open)
-    )
-    def `NEW*` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Blocked, Anything)
-    )
-    def `NEWS` = new RuleBuilder(
-      State(n.toString),
-      Surroundings(Blocked, Blocked, Blocked, Blocked)
-    )
-  }
-  
-   // a class to gather the move direction and next state
-  class RHSBuilder(val moveDirection: MoveDirection) {
-    def apply(nextState: Int): (MoveDirection, State) =
-      (moveDirection, State(nextState.toString))
+given Conversion[String, MoveDirection] = (dir: String) =>
+  dir match {
+    case "One hop this time" => North
+    case "Slide to the right" => East
+    case "Slide to the left" => West
+    case "Reverse" => South
+    case "Criss cross" => StayHere
   }
 
-  extension (direction: String) {
-    def `One hop this time` = new RHSBuilder(North)
-    def `Slide to the right` = new RHSBuilder(East)
-    def `Slide to the left` = new RHSBuilder(West)
-    def `Reverse` = new RHSBuilder(South)
-    def `Freeze` = new RHSBuilder(StayHere)
-  }
-}
+/** A class that describes the contents of a location in the maze. */
+sealed abstract class RelativeDescription(val name: String):
+  override def toString = name
+
+/** The location has a wall */
+object Blocked extends RelativeDescription("Freeze")
+
+/** The location has no wall */
+object Open extends RelativeDescription("Funky")
+
+/** The location may or may not have a wall */
+object Anything extends RelativeDescription("Cha")
+
+/** A class that describes a direction the robot can move. */
+sealed abstract class MoveDirection(val dir: String):
+  override def toString = dir
+
+/** Move to the north */
+object North extends MoveDirection("One hop this time")
+
+/** Move to the east */
+object East extends MoveDirection("Slide to the right")
+
+/** Move to the west */
+object West extends MoveDirection("Slide to the left")
+
+/** Move to the south */
+object South extends MoveDirection("Reverse")
+
+/** Don't move */
+object StayHere extends MoveDirection("Criss cross")
+
+/** A class that describes the positions to the north, east, west, and south of
+  * some other position.
+  */
+case class Surroundings(
+    north: RelativeDescription,
+    east: RelativeDescription,
+    west: RelativeDescription,
+    south: RelativeDescription
+):
+  override def toString = f"$north$east$west$south"
+
+/** A class that represents a state in which the robot may find itself. */
+case class State(name: String):
+  override def toString = name
+
+case class Rule(
+    startState: State,
+    surroundings: Surroundings,
+    moveDirection: MoveDirection,
+    endState: State
+)
