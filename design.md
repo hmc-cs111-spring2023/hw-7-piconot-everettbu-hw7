@@ -22,3 +22,4 @@ My design will not account for walls so it will be difficult to identify when th
 
 
 ## Is there anything you would improve about your design?
+I would have liked for it to compile. This seems like a project I might have to pick up again and improve.
