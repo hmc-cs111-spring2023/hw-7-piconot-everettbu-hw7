@@ -1,10 +1,8 @@
+import picolib._
 import picolib.maze._
 import java.io.File
-import piconot.internal.MoveDirection
-import piconot.internal.Surroundings
-import picolib.semantics.Rule
-import picolib.semantics.State
-
+import picolib.semantics._
+import piconot.internal.given
 
 
 val emptyMaze1 = Maze("resources" + File.separator + "empty.txt")
